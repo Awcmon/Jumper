@@ -2,6 +2,8 @@
 #include <string>
 #include "jump.h"
 
+#include <Windows.h>
+
 int main(int argc, char * argv[])
 {
 	jump::url_data urldata;
@@ -52,6 +54,17 @@ int main(int argc, char * argv[])
 			std::cerr << je.what() << std::endl;
 			continue;
 		}
+
+		const char* output = urldata.cdn_url.c_str();
+		std::cout << output << "\n";
+		const size_t len = strlen(output) + 1;
+		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
+		memcpy(GlobalLock(hMem), output, len);
+		GlobalUnlock(hMem);
+		OpenClipboard(0);
+		EmptyClipboard();
+		SetClipboardData(CF_TEXT, hMem);
+		CloseClipboard();
 	}
 
 	return 0;
